@@ -1,0 +1,25 @@
+# Stage 1: Build Frontend
+FROM node:22 AS frontend-builder
+WORKDIR /var/www
+COPY . .
+RUN npm install && npm run build
+
+# Stage 2: Build Final PHP Image
+FROM php:8.4-fpm
+WORKDIR /var/www
+COPY . .
+# Copy hasil build frontend ke folder public
+COPY --from=frontend-builder /var/www/public/build /var/www/public/build
+
+# Install dependensi sistem dan nano (untuk edit .env di server)
+RUN apt-get update && apt-get install -y \
+    libpng-dev libjpeg-dev libfreetype6-dev zip git unzip nano \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd pdo pdo_mysql exif
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN composer install --no-dev --optimize-autoloader
+
+# Berikan izin akses folder
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache

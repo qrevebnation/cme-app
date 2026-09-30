@@ -1,0 +1,33 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: cme-app-container
+    restart: unless-stopped
+    ports:
+      - "8089:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./:/var/www
+    command: php artisan serve --host=0.0.0.0 --port=8000
+    networks:
+      - cme-network
+
+  vite:
+    image: node:22-alpine
+    container_name: cme-vite-container
+    restart: unless-stopped
+    working_dir: /var/www
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./:/var/www
+    command: npm run dev -- --host 0.0.0.0
+    networks:
+      - cme-network
+
+networks:
+  cme-network:
+    driver: bridge

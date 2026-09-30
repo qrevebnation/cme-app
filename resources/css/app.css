@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Palet Nordic (DESIGN.md): light bg #ECEFF4 surface #FFFFFF teks #2E3440
+     muted #4C566A aksen #115E59 (7,58:1 terhadap putih; teks utama di atas
+     bg-primary/10 di atas bg #ECEFF4 = 5,7:1, lulus AA teks normal).
+     #0F766E = accent-strong untuk hover/tekan (5,47:1 terhadap putih). */
+  --color-primary: #115E59;
+  --color-primary-strong: #0F766E;
+  /* Teks di atas bg-primary solid: putih = 7,58:1. Mode gelap memakai
+     varian terang (#88C0D0) sehingga foreground-nya digelapkan di bawah. */
+  --color-primary-foreground: #FFFFFF;
+  --color-bg: #ECEFF4;
+  --color-surface: #FFFFFF;
+  --color-text: #2E3440;
+  --color-ok: #16A34A;
+  --color-ng: #DC2626;
+  --color-ng-foreground: #FFFFFF;
+  --color-warning: #CA8A04;
+  /* Border #7B8799 = 3,16:1 terhadap bg, 3,64:1 terhadap surface (batas non-teks 3:1). */
+  --color-border: #7B8799;
+  /* Teks sekunder #4C566A = 6,40:1 di bg, 7,38:1 di surface. Latar tenggelam
+     #E5E9F0: teks 10,26:1, muted 6,06:1. */
+  --color-text-muted: #4C566A;
+  --color-danger: #DC2626;
+  --color-surface-sunken: #E5E9F0;
+
+  /* Placeholder/input di atas surface putih: #6B7280 = 4,83:1, #64748B = 4,76:1. */
+  --color-gray-400: #6B7280;
+  --color-slate-400: #64748B;
+  /* gray/slate-500 (Tailwind default, 4,13:1 di bg) gagal AA untuk teks sekunder
+     yang dipakai luas di halaman; #566072 = 5,50:1 di bg, 6,34:1 di surface,
+     5,21:1 di sunken. Ikon dekoratif non-teks tetap pakai gray/slate-300. */
+  --color-gray-500: #566072;
+  --color-slate-500: #566072;
+
+  /* Satu pasangan font (#47): Inter untuk teks, Montserrat untuk judul (DESIGN.md rev. malam). */
+  --font-headlines: 'Montserrat', 'Inter', sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+}
+
+/* Varian gelap Nordic: bg #2E3440 surface #3B4252 teks #ECEFF4 (10,84:1)
+   muted #C3CAD6 (6,10:1 di surface) aksen #88C0D0 (5,03:1 di surface). */
+:root.dark {
+  --color-primary: #88C0D0;
+  --color-primary-strong: #A5D5E0;
+  /* bg-primary gelap = #88C0D0 terang, jadi teks tombol digelapkan
+     (#16302E = 9,4:1 terhadap #88C0D0). */
+  --color-primary-foreground: #16302E;
+  --color-bg: #2E3440;
+  --color-surface: #3B4252;
+  --color-text: #ECEFF4;
+  --color-ok: #6EE7B7;
+  --color-ng: #FCA5A5;
+  --color-ng-foreground: #450A0A;
+  --color-warning: #FCD34D;
+  --color-border: #8A99B0;
+  --color-text-muted: #C3CAD6;
+  --color-danger: #FCA5A5;
+  --color-surface-sunken: #434C5E;
+  --color-gray-400: #A9B4C6;
+  --color-slate-400: #C3CAD6;
+  /* Sekunder terang di atas bg/surface gelap: #C3CAD6 = 6,10:1 di surface. */
+  --color-gray-500: #C3CAD6;
+  --color-slate-500: #C3CAD6;
+  /* Netral gelap Tailwind (gray/slate 600-900) dipakai luas sebagai teks UI
+     (judul `text-gray-900`, tabel, tombol) dan tidak boleh tetap gelap di atas
+     bg/surface gelap. Diubah ke skala terang bertingkat: 900 = teks utama
+     (#ECEFF4), 800 (#DDE3EC), 700 = sekunder (#C3CAD6), 600 (#A9B4C6). */
+  --color-gray-600: #A9B4C6;
+  --color-gray-700: #C3CAD6;
+  --color-gray-800: #DDE3EC;
+  --color-gray-900: #ECEFF4;
+  --color-slate-600: #A9B4C6;
+  --color-slate-700: #C3CAD6;
+  --color-slate-800: #DDE3EC;
+  --color-slate-900: #ECEFF4;
+  /* Netral terang (50-300) dipakai sebagai latar ringan & border; di mode gelap
+     polaritas ramp dibalik agar hierarki terjaga: 50 (#38414F) di bawah surface
+     di atas bg, 100 (#343C4A), 200 (#2A313E) di bawah bg, 300 (#252A36) border
+     tergelap. Teks gray-400 di atas gray-50 = 4,92:1 (lolos AA). */
+  --color-gray-50: #38414F;
+  --color-slate-50: #38414F;
+  --color-gray-100: #343C4A;
+  --color-slate-100: #343C4A;
+  --color-gray-200: #2A313E;
+  --color-slate-200: #2A313E;
+  --color-gray-300: #252A36;
+  --color-slate-300: #252A36;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Tombol zoom Leaflet dinaikkan ke 44 px di layar sentuh agar mudah ditekan.
+     Pustaka Leaflet memakai `.leaflet-touch` dengan spesifisitas lebih tinggi,
+     jadi aturan ini dinaikkan setara dan ditandai penting. */
+  @media (max-width: 1023px) {
+    .leaflet-touch .leaflet-control-zoom a,
+    .leaflet-control-zoom a {
+      width: 44px !important;
+      height: 44px !important;
+      line-height: 44px !important;
+      font-size: 22px !important;
+    }
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-headlines);
+    font-weight: 700;
+    color: inherit;
+  }
+
+  /* R-25 (#33): placeholder input. Preflight Tailwind v4 memakai currentColor 50% (3,05:1);
+     dipaksa ke token gray-400 (4,83:1) agar semua input lulus AA. */
+  ::placeholder {
+    color: var(--color-gray-400);
+    opacity: 1;
+  }
+}
